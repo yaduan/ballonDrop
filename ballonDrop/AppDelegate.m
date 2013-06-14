@@ -29,6 +29,7 @@
 									sharegroup:nil
 								 multiSampling:NO
 							   numberOfSamples:0];
+    
 
 	director_ = (CCDirectorIOS*) [CCDirector sharedDirector];
 
@@ -96,7 +97,9 @@
 	return UIInterfaceOrientationIsLandscape(interfaceOrientation);
 }
 
-
+//- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
+//    
+//}
 // getting a call, pause the game
 -(void) applicationWillResignActive:(UIApplication *)application
 {
@@ -132,6 +135,7 @@
 // purge memory
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
 {
+    NSLog(@"%s",__func__);
 	[[CCDirector sharedDirector] purgeCachedData];
 }
 
