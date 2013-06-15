@@ -15,9 +15,10 @@
 
 @synthesize delegete;
 
-+ (id) gameRestart:(id)_delegate
+
++(id)gamePause:(id)_delegate
 {
-    return [[self alloc] initWithStart:_delegate];
+    return [[self alloc]initPause:_delegate];
 }
 
 -(id)initWithStart:(id)_delegate
@@ -26,7 +27,16 @@
     {
         delegate = _delegate;
         [self pauseDelegate];
-        [self start];
+    }
+    return self;
+}
+
+-(id)initPause:(id)_delegate
+{
+    if(self = [super init])
+    {
+        delegate = _delegate;
+        [self pauseDelegate];
     }
     return self;
 }
@@ -37,25 +47,6 @@
     //        [delegate pauseLayerDidPause];
     [delegate onExit];
     [delegate.parent addChild:self z:10];   //这里在当前的场景上加载其他的场景
-}
-
--(void)start
-{
-    CGSize size = [[CCDirector sharedDirector] winSize];
-    CCSprite *sprite = [CCSprite spriteWithFile:@"balloon.png"];
-    CGPoint spritePosition = CGPointMake(sprite.contentSize.width/2,sprite.contentSize.height/2+20);
-    CGRect labelPosition = CGRectMake(0,0,60,35);
-    ccColor3B color = ccc3(125, 255, 255);
-    CCSprite *pauseSprite= [initGameScene callmakeSprite:@"balloon1.png" :@"开始" :@"Arial":30 :color:labelPosition :spritePosition];
-    CCSprite *startSprite= [initGameScene callmakeSprite:@"balloon.png" :@"开始" :@"Arial":30 :color:labelPosition :spritePosition];
-    CCMenuItemSprite *resume =[CCMenuItemSprite itemWithNormalSprite:pauseSprite
-                                                      selectedSprite:startSprite
-                                                              target:self
-                                                            selector:@selector(doResume:)];
-    resume.position = ccp(size.width*0.05,size.height-70);
-    CCMenu * menu = [CCMenu menuWithItems:resume,nil];
-    menu.position = CGPointZero;
-    [self addChild:menu];
 }
 
 -(void)doResume: (id)sender

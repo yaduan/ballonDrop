@@ -7,6 +7,7 @@
 //
 
 #import "record.h"
+#import "initGameScene.h"
 
 @implementation record
 @synthesize listData;
@@ -15,7 +16,9 @@
 {
     self = [super initWithFrame:rect] ;
     [self setAlpha:0.9];
+
     [self setBackgroundColor:MainBackgroundColor];
+    [self setBackgroundColor:[UIColor yellowColor]];
     
     UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(30, 50, 600, 30)];
     titleLabel.backgroundColor = [UIColor clearColor];
@@ -26,12 +29,12 @@
     
     shared = [Shared shared];
     self.listData = shared.recordDataArray;
-    UITableView *tableView = [[UITableView alloc]initWithFrame:CGRectMake(30, 100, 600,300)];
-    tableView.delegate = self;
-    tableView.dataSource = self;
-    tableView.backgroundColor = [UIColor clearColor];
-    tableView.separatorColor = [UIColor clearColor];
-    [self addSubview:tableView];
+    table = [[UITableView alloc]initWithFrame:CGRectMake(30, 100, 600,300)];
+    table.delegate = self;
+    table.dataSource = self;
+    table.backgroundColor = [UIColor clearColor];
+    table.separatorColor = [UIColor clearColor];
+    [self addSubview:table];
    
     
     
@@ -53,6 +56,13 @@
     [button addTarget:self action:@selector(removeView) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:button];
     
+    UIButton *button1 = [UIButton buttonWithType:UIButtonTypeRoundedRect];;
+    button1.frame = CGRectMake(120.0f, 460.0f, 80.0f, 32.0f);
+    [button1 setTitle:@"clear" forState:UIControlStateHighlighted];
+    [button1 setTitle:@"clear" forState:UIControlStateNormal];
+    [button1 addTarget:self action:@selector(clearData) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:button1];
+    
     return self ;
 }
 
@@ -68,19 +78,33 @@
     [self setFrame:rect];
     
     [UIView commitAnimations];
+    
+    [initGameScene endButtonTapped];
+}
+
+-(void)clearData
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *appFile = [documentsDirectory stringByAppendingPathComponent:@"duanduan"];
+    NSString *logPath = [appFile stringByAppendingPathComponent:@"file.txt"];
+    [[NSFileManager defaultManager] removeItemAtPath:logPath error:nil];
+    shared.recordDataArray = nil;
+    self.listData = nil;
+    [table reloadData];
 }
 
 -(void)presentView
 {
+      
     CGContextRef context = UIGraphicsGetCurrentContext();
     [UIView beginAnimations:nil context:context];
     [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
     [UIView setAnimationDuration:0.5f];
-    
+      
     CGRect rect = [self frame];
     rect.origin.y = 0.0;
     [self setFrame:rect];
-    
     [UIView commitAnimations];
 }
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -106,7 +130,8 @@
     cell = [tableView dequeueReusableCellWithIdentifier:cellString];
     if(!cell)
     {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellString] autorelease];
+     //   cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellString] autorelease];
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellString];
     }
     
     cell.textLabel.text = [self.listData objectAtIndex:indexPath.row];
@@ -116,12 +141,13 @@
     cell.textLabel.center = tableView.center;
     tableView.editing=NO;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    [tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:7 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+  //  [tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:7 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
     return cell;
 }
 
 - (void)dealloc
 {
+    NSLog(@"record");
     listData = nil;
     [listData release];
     [super dealloc];

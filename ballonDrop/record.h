@@ -14,6 +14,7 @@
 @interface record : UIView <UIPopoverControllerDelegate,UITableViewDataSource,UITableViewDelegate,UITextFieldDelegate>
 {
     Shared *shared;
+    UITableView *table;
 }
 
 @property (nonatomic,retain) NSArray *listData;

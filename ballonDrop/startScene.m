@@ -57,11 +57,11 @@
         
         //(4)创建动画对象
         CCAnimation *gwalkAnim = [CCAnimation animationWithSpriteFrames:walkGirl delay:0.3f];
-        CCAnimation *bwalkAnim = [CCAnimation animationWithSpriteFrames:walkBoy delay:0.3];
+        CCAnimation *bwalkAnim = [CCAnimation animationWithSpriteFrames:walkBoy delay:0.3f];
         self.girlSprite = [CCSprite spriteWithSpriteFrameName:@"girl1.png"];
         self.boySprite = [CCSprite spriteWithSpriteFrameName:@"boy1.png"];
-        _girlSprite.position = ccp(630,430);
-        _boySprite.position = ccp(630, 430);
+        _girlSprite.position = ccp(760,430);
+        _boySprite.position = ccp(300, 430);
         
         //(5)接下来，我们通过传入sprite帧列表来创建一个CCAnimation对象，并且指定动画播放的速度。我们使用０.１来指定每个动画帧之间的时间间隔。 创建sprite并且让它run动画action
         self.girlAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:gwalkAnim]];
@@ -85,10 +85,10 @@
         
         // 4) Add children to CCParallaxNode
         [_backgroundNode addChild:spacedust1 z:0 parallaxRatio:dustSpeed positionOffset:ccp(spacedust1.contentSize.width/2,spacedust1.contentSize.height/2)];
-        [_backgroundNode addChild:spacedust2 z:0 parallaxRatio:dustSpeed positionOffset:ccp(spacedust1.contentSize.width/2+spacedust2.contentSize.width,spacedust1.contentSize.height/2)];
+        [_backgroundNode addChild:spacedust2 z:0 parallaxRatio:dustSpeed positionOffset:ccp(spacedust1.contentSize.width/2+spacedust2.contentSize.width-4,spacedust1.contentSize.height/2)];
         
         [self scheduleUpdate];
-        [self scheduleOnce:@selector(enterNextScene) delay:4];
+        [self scheduleOnce:@selector(enterNextScene) delay:6];
     }
     return self;
 }

@@ -298,6 +298,7 @@ int i = 0,j = 0;
     swoosh = nil;
     ballonarray = nil;
     numArray = nil;
+    cutBallonArray = nil;
     [super dealloc];
 }
 

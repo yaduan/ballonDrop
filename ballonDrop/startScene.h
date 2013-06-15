@@ -9,8 +9,27 @@
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
 
-@interface startScene : CCNode {
+@interface startScene : CCLayer
+{
+    CCParallaxNode *backgroundNode;
+    CCSprite *spacedust1;
+    CCSprite *spacedust2;
     
+    CCSprite *girlSprite;
+    CCSprite *boySprite;
+    
+    CCAction *girlAction;
+    CCAction *boyAction;
 }
+
+@property (nonatomic,retain) CCParallaxNode *backgroundNode;
+
+@property (nonatomic,retain) CCSprite *girlSprite;
+@property (nonatomic,retain) CCSprite *boySprite;
+
+@property (nonatomic,retain) CCAction *girlAction;
+@property (nonatomic,retain) CCAction *boyAction;
+
++(CCScene *) scene;
 
 @end

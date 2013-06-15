@@ -22,9 +22,9 @@
 }
 @property (nonatomic,assign)restartGameProtocol *delegete;
 
-+ (id) gameRestart:(id)_delegate;
--(void)start;
++(id)gamePause:(id)_delegate;
 -(void)pauseDelegate;
 -(id)initWithStart:(id)_delegate;
+-(id)initPause:(id)_delegate;
 
 @end

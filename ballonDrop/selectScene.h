@@ -23,15 +23,19 @@
     CCSprite * operatorSprite;
     CCSprite * operandsSprite;
     
-    CCSprite *Icon;
-    CCSprite *sprite;
-    CCSprite *sprite1;
-    CCSprite *sprite2;
-    CCSprite *sprite3;
-    CCSprite *sprite4;
-    CCSprite *sprite5;
-    CCSprite *sprite6;
-    CCSprite *OkSprite;
+    CCAction *walkAction;
+    CCAction *moveAction;
+    BOOL moving;
+    
+    CCSprite *spriteAdd;
+    CCSprite *spriteMult;
+    CCSprite *spriteTen;
+    CCSprite *spriteTwenty;
+    CCSprite *spriteThirty;
+    CCSprite *spriteFifty;
+    CCSprite *spriteHundred;
+    CCSprite *spriteReset;
+    CCSprite *spriteOK;
     
     CCArray *allArray;
     CCArray *jumpArray;
@@ -39,6 +43,31 @@
     Shared *share;
 
 }
+
+@property (nonatomic,retain) CCSprite *Icon;
+@property (nonatomic,retain) CCAction *walkAction;
+@property (nonatomic,retain) CCAction *moveAction;
+
+@property (nonatomic,retain) CCSprite *spriteAdd;
+@property (nonatomic,retain) CCSprite *spriteMult;
+@property (nonatomic,retain) CCSprite *spriteTen;
+@property (nonatomic,retain) CCSprite *spriteTwenty;
+@property (nonatomic,retain) CCSprite *spriteThirty;
+@property (nonatomic,retain) CCSprite *spriteFifty;
+@property (nonatomic,retain) CCSprite *spriteHundred;
+@property (nonatomic,retain) CCSprite *spriteReset;
+@property (nonatomic,retain) CCSprite *spriteOK;
+
+@property (nonatomic,retain) CCAction *addAction;
+@property (nonatomic,retain) CCAction *multAction;
+@property (nonatomic,retain) CCAction *tenAction;
+@property (nonatomic,retain) CCAction *twentyAction;
+@property (nonatomic,retain) CCAction *thirtyAction;
+@property (nonatomic,retain) CCAction *fiftyAction;
+@property (nonatomic,retain) CCAction *hundredAction;
+@property (nonatomic,retain) CCAction *resetAction;
+@property (nonatomic,retain) CCAction *okAction;
+
 +(CCScene *) scene;
 -(id) init;
 - (void)starButtonTapped;

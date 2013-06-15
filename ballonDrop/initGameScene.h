@@ -12,7 +12,7 @@
 #import "SimpleAudioEngine.h"
 #import "touchEvents.h"
 #import "randomOperand.h"
-#import "Box2D.h"
+#import "makeNewSprite.h"
 
 #define speed 100.0
 
@@ -21,6 +21,7 @@
     double nextTossTime;
     CCArray *opeArray;
     Shared  *sharedArray;
+    makeNewSprite *makeSprite;
     CCSprite *resultSprite;
     double timer;
     
@@ -31,8 +32,6 @@
     CCLabelTTF *totalQue;
     CCLabelTTF *doright;
     
-    //定义一个世界b2world
-    b2World *world;
 }
 @property(nonatomic,retain)CCSprite *resultSprite;
 
@@ -46,7 +45,5 @@
 -(void)initPauseStartSprite;         //初始化暂停开始精灵
 -(void)pauseScene;                   //暂停屏幕
 -(void)makeBallonPositionRandom:(id)sender;
--(CCSprite *)makeSprite:(NSString *)sprite:(NSString *)numString:(NSString *)fontName:(NSInteger)size:(ccColor3B)color:(CGRect)rect:(CGPoint)position;
-+(id)callmakeSprite:(NSString *)sprite:(NSString *)numString:(NSString *)fontName:(NSInteger)size:(ccColor3B)color:(CGRect)rect:(CGPoint)position;
-
++ (void)endButtonTapped;
 @end

@@ -18,6 +18,7 @@
 #import "record.h"
 #import "selectScene.h"
 #import "CGPointExtension.h"
+#import "selectScene.h"
 
 #define RESTITUTION_CONSTANT (0.75) //弹性系统的
 
@@ -44,11 +45,18 @@
     if(self = [super init])
     {
         nextTossTime = CACurrentMediaTime();
+        
+        makeSprite = [makeNewSprite node];
+        
         sharedArray = [Shared shared];
         sharedArray.FLAG = -1;
         sharedArray.totalQuesNum = 0;
         sharedArray.doRightNum = 0;
         sharedArray.dateArray = [[NSMutableArray alloc] init];
+        
+        CCSprite *bg = [CCSprite spriteWithFile:@"wang1.png"];
+        bg.position = ccp(bg.contentSize.width/2,bg.contentSize.height/2);
+        [self addChild:bg]; //将精灵加到layer上
         
         sharedArray.allOpeSpriteArray = [CCArray arrayWithCapacity:5];   //这里面存的是3个操作数和两个符号
         [randomOperand getOperateType];
@@ -67,26 +75,6 @@
     return self;
 }
 
-//制作精灵
--(CCSprite *)makeSprite:(NSString *)sprite:(NSString *)numString:(NSString *)fontName:(NSInteger)size:(ccColor3B)color:(CGRect)rect:(CGPoint)position
-{
-    CCSprite *opeSprite= [CCSprite spriteWithFile:sprite];
-    CCLabelTTF* label = [CCLabelTTF labelWithString:numString fontName:fontName fontSize:size];
-    CCSprite *sprt = [CCSprite spriteWithTexture:label.texture rect:rect];
-    sprt.position = position;
-    sprt.color = color;
-    sprt.anchorPoint = CGPointMake(0.5,0.5);
-    [opeSprite addChild:sprt];
-    return opeSprite;
-}
-
-//调用制作精灵的函数，为了方便在别的函数中调用方便
-+(id)callmakeSprite:(NSString *)sprite:(NSString *)numString:(NSString *)fontName:(NSInteger)size:(ccColor3B)color:(CGRect)rect:(CGPoint)position
-{
-    DebugMethod();
-    return [[self alloc]makeSprite:sprite :numString :fontName :size :color : rect :position];
-}
-
 -(void)initThreeOpeNumSprite             //初始化操作数精灵
 {
     DebugMethod();
@@ -98,7 +86,7 @@
         CCSprite *ballon = [CCSprite spriteWithFile:@"balloon.png"];
         ccColor3B color = ccc3(125, 255, 255);
         CGPoint spritePosition = CGPointMake(ballon.contentSize.width/2+7,ballon.contentSize.height/2+20);
-        ballon= [self makeSprite:@"balloon.png" :numString :@"Arial":35 :color:CGRectMake(0,0,64,32) :spritePosition];
+        ballon = [makeNewSprite callmakeSprite:@"balloon.png" :numString :@"Arial" :35  :color :CGRectMake(0,0,64,32) :spritePosition];
         ballon.position = CGPointMake(arc4random()%1200,-[ballon texture].contentSize.height);
         [self addChild:ballon z:1 tag:i+1];
         [sharedArray.allOpeSpriteArray addObject:ballon];                //将组合成功的气球放入sharedArray.allOpeSpriteArray中，表示上升的气球总数
@@ -134,7 +122,7 @@
             size = 67;
         }
          NSString *numString = [[operatorType getOperatorType] objectAtIndex:i];
-        CCSprite *opeSprite= [self makeSprite:labelString :numString :@"Arial":size:color:labelPosition :spritePosition];
+        CCSprite *opeSprite = [makeNewSprite callmakeSprite:labelString :numString :@"Arial" :size :color :labelPosition :spritePosition];
         opeSprite.position = CGPointMake(350*(i+1)+[sprite texture].contentSize.width,[sprite texture].contentSize.height+200*(i+1));
         [self addChild:opeSprite z:1 tag:i+4];
         [sharedArray.allOpeSpriteArray addObject:opeSprite];
@@ -144,48 +132,37 @@
 -(void)initResultSprite          //初始化结果数精灵
 {
     DebugMethod();
+    CGSize size = [[CCDirector sharedDirector]winSize];
     resultSprite = [CCSprite spriteWithFile:@"88.png"];
     CGPoint spritePosition = CGPointMake(resultSprite.contentSize.width/2-11,resultSprite.contentSize.height/2+8);
     NSNumber *resultNum = [sharedArray.resultAndOperateArray objectAtIndex:0];
     NSString *resultString = [NSString stringWithFormat:@"%@",resultNum];
     ccColor3B color = ccc3(125, 255, 255);
-    resultSprite= [self makeSprite:@"88.png" :resultString :@"Arial":70 :color:CGRectMake(0,0,75,70) :spritePosition];
+    resultSprite = [makeNewSprite callmakeSprite:@"88.png" :resultString :@"Arial" :70 :color :CGRectMake(0,0,75,70) :spritePosition];
     resultSprite.position = CGPointMake([resultSprite texture].contentSize.width/2-5,
-                                        [resultSprite texture].contentSize.height/2);
+                                        size.height-[resultSprite texture].contentSize.height/2);
     [self addChild:resultSprite z:1 tag:0];
     
 }
 
--(void)initPauseStartSprite    //初始化暂停开始精灵
+-(void)initPauseStartSprite    //初始化退出精灵
 {
     DebugMethod();
     CGSize size = [[CCDirector sharedDirector]winSize];
     CGPoint spritePosition = CGPointMake(resultSprite.contentSize.width/2-26,resultSprite.contentSize.height/2-8);
     CGRect labelPosition = CGRectMake(0,0,60,35);
     ccColor3B color = ccc3(125, 255, 255);
-    CCSprite *pauseSprite= [self makeSprite:@"balloon.png" :@"暂停" :@"Arial":30 :color:labelPosition :spritePosition];
-    CCSprite *startSprite= [self makeSprite:@"balloon1.png" :@"暂停" :@"Arial":30 :color:labelPosition :spritePosition];
-    CCSprite *endSprite= [self makeSprite:@"balloon.png" :@"退出" :@"Arial":30 :color:labelPosition :spritePosition];
-    CCSprite *endSprite_= [self makeSprite:@"balloon1.png" :@"退出" :@"Arial":30 :color:labelPosition :spritePosition];
-    CCMenuItemSprite *pauseButton =[CCMenuItemSprite itemWithNormalSprite:pauseSprite
-                                                           selectedSprite:startSprite
-                                                                   target:self
-                                                                 selector:@selector(pauseScene)];
+    CCSprite *endSprite= [makeNewSprite callmakeSprite:@"balloon.png" :@"退出" :@"Arial":30 :color:labelPosition :spritePosition];
+    CCSprite *endSprite_= [makeNewSprite callmakeSprite:@"balloon1.png" :@"退出" :@"Arial":30 :color:labelPosition :spritePosition];
     CCMenuItemSprite *endButton =[CCMenuItemSprite itemWithNormalSprite:endSprite
                                                          selectedSprite:endSprite_
                                                                  target:self
                                                                selector:@selector(resultScene)];
-    pauseButton.position = ccp(size.width*0.05,size.height-70);  //以后这里要自己设定图片和位置
     endButton.position = ccp(size.width-[[endSprite texture]contentSize].width/2, size.height-70);
-    CCMenu *menu = [CCMenu menuWithItems:pauseButton,endButton,nil];
+   // CCMenu *menu = [CCMenu menuWithItems:pauseButton,endButton,nil];
+    CCMenu *menu = [CCMenu menuWithItems:endButton,nil];
     menu.position = CGPointZero;
     [self addChild:menu z:2];
-}
-
--(void)pauseScene
-{
-    DebugMethod();
-    [restartGame gameRestart:self];
 }
 
 -(void)resultScene
@@ -194,11 +171,16 @@
      [self GetRecord];
      [self saveGameData:_dataStr saveFileName:@"duanduan"];
      [self loadGameData:@"duanduan"];
-    [self stopAllAction];
+    [restartGame gamePause:self];
      record *rec = [[record alloc]initWithFrame:CGRectMake(0.0f, 0.0f, 750, 500)];
      [rec setCenter:CGPointMake(490.0f, -140.0f)];
      [rec  presentView];
      [[[CCDirector sharedDirector] view] addSubview:rec];
+}
+
++ (void)endButtonTapped
+{
+      [[CCDirector sharedDirector]replaceScene:[CCTransitionSlideInL transitionWithDuration:1.2f scene:[selectScene scene]]];
 }
 
 -(void)stopAllAction
@@ -243,7 +225,7 @@
     CGSize size = [[CCDirector sharedDirector]winSize];
     //这里以后要加个背景图片
     timeLimit = [CCLabelTTF labelWithString:@"" fontName:@"Arial" fontSize:48];
-    timeLimit.position = CGPointMake(size.width - 50,100);
+    timeLimit.position = CGPointMake(size.width/2,size.height-50);
     timeLimit.anchorPoint = CGPointMake(0.5, 0.5);
     [self addChild:timeLimit z:1];
 }
@@ -274,7 +256,7 @@
     NSInteger week = [comps weekday]-1;        
     NSInteger hour = [comps hour];
     NSInteger min = [comps minute];
-    [comps release];
+//    [comps release];  这里不能进行释放，因为在切换场景的时候就已经全部释放
     if (hour == 12)
     {
         getDateString= [NSString  stringWithFormat:@"%4d年%d月%d日            %@            下午%d:",year,month,day,[weekArray objectAtIndex:week],hour];
@@ -380,7 +362,6 @@
     NSString *appFile = [documentsDirectory stringByAppendingPathComponent:fileName];
     NSString *logPath = [appFile stringByAppendingPathComponent:@"file.txt"];
     //路径
-   //NSMutableArray *myData = [[[[NSMutableArray alloc] initWithContentsOfFile:logPath] componentsJoinedByString:@"\n"] autorelease];
     NSString *ss = [NSString stringWithContentsOfFile:logPath encoding:NSUTF8StringEncoding error:&error];
     sharedArray.recordDataArray = [ss componentsSeparatedByString:@"\n"];
     return sharedArray.recordDataArray;
@@ -787,9 +768,9 @@
 -(void)dealloc
 {
     CCLOG(@"%@,%@",NSStringFromSelector(_cmd),self);
+       
     [self removeFromParentAndCleanup:YES];
-    [resultSprite release];
-    resultSprite = nil;
+
     [super dealloc];
 }
 
