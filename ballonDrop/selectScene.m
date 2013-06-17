@@ -8,9 +8,12 @@
 
 //http://www.xuanyusong.com/archives/1878  参考地点
 
+
+
 #import "selectScene.h"
-#import "makeNewSprite.h"
 #import "initGameScene.h"
+
+#define velocity 10
 
 @implementation selectScene
 
@@ -33,7 +36,7 @@
     CCScene *scene = [CCScene node];
     selectScene *layer = [selectScene node];
     [scene addChild: layer];
-     return scene;
+    return scene;
 }
 
 -(void)bearMoveEnded
@@ -47,302 +50,277 @@
     if( (self=[super init]) )
     {
         share = [Shared shared];
-        allArray = [[CCArray alloc]initWithCapacity:5];
         share.jumpArray = [[CCArray alloc]initWithCapacity:3];
         self.isTouchEnabled = YES;
         
+        clickCount = 0;
+        
         CGSize winsize = [[CCDirector sharedDirector]winSize];
-        
-        
         CCSprite *background = [CCSprite spriteWithFile:@"background.png"];
         [background setPosition:ccp(winsize.width/2, winsize.height/2)];
         background.anchorPoint = ccp(0.5, 0.5);
         [self addChild:background z:-1];
-        
-        [[CCSpriteFrameCache sharedSpriteFrameCache]addSpriteFramesWithFile:@"bee.plist"];
-        
-        //2) 创建一个精灵批处理结点
-        CCSpriteBatchNode *beeAdd = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
-        [self addChild:beeAdd];
-        CCSpriteBatchNode *beeMult = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
-        [self addChild:beeMult];
-        CCSpriteBatchNode *beeTen = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
-        [self addChild:beeTen];
-        CCSpriteBatchNode *beeTwenty = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
-        [self addChild:beeTwenty];
-        CCSpriteBatchNode *beeThirty = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
-        [self addChild:beeThirty];
-        CCSpriteBatchNode *beeFifty = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
-        [self addChild:beeFifty];
-        CCSpriteBatchNode *beeHundred = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
-        [self addChild:beeHundred];
-        CCSpriteBatchNode *beeReset = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
-        [self addChild:beeReset];
-        CCSpriteBatchNode *beeOK = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
-        [self addChild:beeOK];
-
-        //(3)创建CCSpriteBatchNode对象，把spritesheet当作参数传进去。收集帧列表
-        NSMutableArray *walkAdd = [NSMutableArray array];
-        NSMutableArray *walkMult = [NSMutableArray array];
-        NSMutableArray *walkTen = [NSMutableArray array];
-        NSMutableArray *walkTwenty = [NSMutableArray array];
-        NSMutableArray *walkThirty = [NSMutableArray array];
-        NSMutableArray *walkFifty = [NSMutableArray array];
-        NSMutableArray *walkHundred = [NSMutableArray array];
-        NSMutableArray *walkReset = [NSMutableArray array];
-        NSMutableArray *walkOK = [NSMutableArray array];
-
-        
-        //为了创建一系列的动画帧，我们简单地遍历我们的图片名字（它们是按照XX1.png-->XX2.png的方式命名的），然后使用共享的CCSpriteFrameCache来获得每一个动画帧。记住，它们已经在缓存里了，因为我们前面调用了addSpriteFramesWithFile方法。
-        for(int i = 1 ; i <= 6 ; i++ )
-        { 
-            [walkAdd addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"addsub%d.png",i]]];
-            [walkMult addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"multdiv%d.png",i]]];
-            [walkTen addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"beeTen%d.png",i]]];
-            [walkTwenty addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"beeTwenty%d.png",i]]];
-            [walkThirty addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"beeThirty%d.png",i]]];
-            [walkFifty addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"beefifty%d.png",i]]];
-            [walkHundred addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"beehundred%d.png",i]]];
-            [walkReset addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"reset%d.png",i]]];
-            [walkOK addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"ok%d.png",i]]];
-        }
-        
-        //(4)创建动画对象
-        CCAnimation *addWalkAnim = [CCAnimation animationWithSpriteFrames:walkAdd delay:0.2f];
-        CCAnimation *multWalkAnim = [CCAnimation animationWithSpriteFrames:walkMult delay:0.2f];
-        CCAnimation *tenWalkAnim = [CCAnimation animationWithSpriteFrames:walkTen delay:0.2f];
-        CCAnimation *twentyWalkAnim = [CCAnimation animationWithSpriteFrames:walkTwenty delay:0.2f];
-        CCAnimation *thirtyWalkAnim = [CCAnimation animationWithSpriteFrames:walkThirty delay:0.2f];
-        CCAnimation *fiftyWalkAnim = [CCAnimation animationWithSpriteFrames:walkFifty delay:0.2f];
-        CCAnimation *hundredWalkAnim = [CCAnimation animationWithSpriteFrames:walkHundred delay:0.2f];
-        CCAnimation *resetWalkAnim = [CCAnimation animationWithSpriteFrames:walkReset delay:0.2f];
-        CCAnimation *okWalkAnim = [CCAnimation animationWithSpriteFrames:walkOK delay:0.2f];
-        
-        self.addAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:addWalkAnim]];
-        self.multAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:multWalkAnim]];
-        self.tenAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:tenWalkAnim]];
-        self.TwentyAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:twentyWalkAnim]];
-        self.thirtyAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:thirtyWalkAnim]];
-        self.fiftyAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:fiftyWalkAnim]];
-        self.hundredAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:hundredWalkAnim]];
-        self.resetAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:resetWalkAnim]];
-        self.okAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:okWalkAnim]];
-        
-        
-        self.spriteAdd = [CCSprite spriteWithSpriteFrameName:@"addsub1.png"];
-        self.spriteMult = [CCSprite spriteWithSpriteFrameName:@"multdiv1.png"];
-        self.spriteTen = [CCSprite spriteWithSpriteFrameName:@"beeTen1.png"];
-        self.spriteTwenty = [CCSprite spriteWithSpriteFrameName:@"beeTwenty1.png"];
-        self.spriteThirty = [CCSprite spriteWithSpriteFrameName:@"beeThirty1.png"];
-        self.spriteFifty = [CCSprite spriteWithSpriteFrameName:@"beefifty1.png"];
-        self.spriteHundred = [CCSprite spriteWithSpriteFrameName:@"beehundred1.png"];
-        self.spriteReset = [CCSprite spriteWithSpriteFrameName:@"reset1.png"];
-        self.spriteOK = [CCSprite spriteWithSpriteFrameName:@"ok1.png"];
-        
-        _spriteAdd.position = ccp(-[_spriteAdd textureRect].size.width/2,510);
-        _spriteMult.position = ccp(-[_spriteMult textureRect].size.width/2, 310);
-        _spriteTen.position = ccp(-300, 650);
-        _spriteTwenty.position = ccp(-300, 550);
-        _spriteThirty.position = ccp(-300,250);
-        _spriteFifty.position = ccp(-300,85);
-        _spriteHundred.position = ccp(-300,350);
-        _spriteReset.position = ccp(10,300);
-        _spriteOK.position = ccp(1024, 600);
-        
-        _spriteAdd.tag = 0;
-        _spriteMult.tag = 1;
-        _spriteTen.tag = 2;
-        _spriteTwenty.tag = 3;
-        _spriteThirty.tag = 4;
-        _spriteFifty.tag = 5;
-        _spriteHundred.tag = 6;
-        _spriteReset.tag = 7;
-        _spriteOK.tag = 8;
-        
-        [_spriteAdd runAction:_addAction];
-        [_spriteMult runAction:_multAction];
-        [_spriteTen runAction:_tenAction];
-        [_spriteTwenty runAction:_twentyAction];
-        [_spriteThirty runAction:_thirtyAction];
-        [_spriteFifty runAction:_fiftyAction];
-        [_spriteHundred runAction:_hundredAction];
-        [_spriteReset runAction:_resetAction];
-        [_spriteOK runAction:_okAction];
-        
-        id actionMove = [CCMoveTo actionWithDuration:10 position:CGPointMake(200, 400)];
-        [_spriteTen runAction:[CCSequence actions:actionMove, nil]];
-        id actionMove1 = [CCMoveTo actionWithDuration:10 position:CGPointMake(600, 410)];
-        [_spriteTwenty runAction:[CCSequence actions:actionMove1, nil]];
-        
-        [beeAdd addChild:_spriteAdd];
-        [beeMult addChild:_spriteMult];
-        [beeTen addChild:_spriteTen];
-        [beeTwenty addChild:_spriteTwenty];
-        [beeThirty addChild:_spriteThirty];
-        [beeFifty addChild:_spriteFifty];
-        [beeHundred addChild:_spriteHundred];
-
-//        [allArray addObject:_spriteAdd];     这里的allArray要按顺序来加载
-//        [allArray addObject:_spriteMult];
-        [allArray addObject:_spriteTen];
-        [allArray addObject:_spriteTwenty];
-//        [allArray addObject:_spriteThirty];
-//        [allArray addObject:_spriteFifty];
-//        [allArray addObject:_spriteHundred];
-//        [allArray addObject:_spriteReset];
-//        [allArray addObject:_spriteOK];
-
-        
-        //(5)接下来，我们通过传入sprite帧列表来创建一个CCAnimation对象，并且指定动画播放的速度。我们使用０.１来指定每个动画帧之间的时间间隔。 创建sprite并且让它run动画action
-//        self.addAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:addWalkAnim]];
-//        self.multAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:multWalkAnim]];
-//        [_spriteAdd runAction:_addAction];
-//        [_spriteMult runAction:_multAction];
-//        
-//        [beeAdd addChild:_spriteAdd];
-//        [beeMult addChild:_spriteMult];
+        [self initAnimationSprite];
     }
     return self;
 }
 
-- (void)update:(ccTime)dt
+-(void)initAnimationSprite
 {
-//    CGPoint sprPos = ccp(25, 0);
+    allArray = [[CCArray alloc]initWithCapacity:5];
+    [[CCSpriteFrameCache sharedSpriteFrameCache]addSpriteFramesWithFile:@"bee.plist"];
+    //2) 创建一个精灵批处理结点
+    CCSpriteBatchNode *beeAdd = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
+    [self addChild:beeAdd];
+    CCSpriteBatchNode *beeMult = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
+    [self addChild:beeMult];
+    CCSpriteBatchNode *beeTen = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
+    [self addChild:beeTen];
+    CCSpriteBatchNode *beeTwenty = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
+    [self addChild:beeTwenty];
+    CCSpriteBatchNode *beeThirty = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
+    [self addChild:beeThirty];
+    CCSpriteBatchNode *beeFifty = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
+    [self addChild:beeFifty];
+    CCSpriteBatchNode *beeHundred = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
+    [self addChild:beeHundred];
+    CCSpriteBatchNode *beeReset = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
+    [self addChild:beeReset];
+    CCSpriteBatchNode *beeOK = [CCSpriteBatchNode batchNodeWithFile:@"bee.png"];
+    [self addChild:beeOK];
+    
+    //(3)创建CCSpriteBatchNode对象，把spritesheet当作参数传进去。收集帧列表
+    NSMutableArray *walkAdd = [NSMutableArray array];
+    NSMutableArray *walkMult = [NSMutableArray array];
+    NSMutableArray *walkTen = [NSMutableArray array];
+    NSMutableArray *walkTwenty = [NSMutableArray array];
+    NSMutableArray *walkThirty = [NSMutableArray array];
+    NSMutableArray *walkFifty = [NSMutableArray array];
+    NSMutableArray *walkHundred = [NSMutableArray array];
+    NSMutableArray *walkReset = [NSMutableArray array];
+    NSMutableArray *walkOK = [NSMutableArray array];
+    
+    
+    //为了创建一系列的动画帧，我们简单地遍历我们的图片名字（它们是按照XX1.png-->XX2.png的方式命名的），然后使用共享的CCSpriteFrameCache来获得每一个动画帧。记住，它们已经在缓存里了，因为我们前面调用了addSpriteFramesWithFile方法。
+    for(int i = 1 ; i <= 6 ; i++ )
+    {
+        [walkAdd addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"addsub%d.png",i]]];
+        [walkMult addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"multdiv%d.png",i]]];
+        [walkTen addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"beeTen%d.png",i]]];
+        [walkTwenty addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"beeTwenty%d.png",i]]];
+        [walkThirty addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"beeThirty%d.png",i]]];
+        [walkFifty addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"beefifty%d.png",i]]];
+        [walkHundred addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"beehundred%d.png",i]]];
+        [walkReset addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"reset%d.png",i]]];
+        [walkOK addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"ok%d.png",i]]];
+    }
+    
+    //(4)创建动画对象
+    CCAnimation *addWalkAnim = [CCAnimation animationWithSpriteFrames:walkAdd delay:0.2f];
+    CCAnimation *multWalkAnim = [CCAnimation animationWithSpriteFrames:walkMult delay:0.2f];
+    CCAnimation *tenWalkAnim = [CCAnimation animationWithSpriteFrames:walkTen delay:0.2f];
+    CCAnimation *twentyWalkAnim = [CCAnimation animationWithSpriteFrames:walkTwenty delay:0.2f];
+    CCAnimation *thirtyWalkAnim = [CCAnimation animationWithSpriteFrames:walkThirty delay:0.2f];
+    CCAnimation *fiftyWalkAnim = [CCAnimation animationWithSpriteFrames:walkFifty delay:0.2f];
+    CCAnimation *hundredWalkAnim = [CCAnimation animationWithSpriteFrames:walkHundred delay:0.2f];
+    CCAnimation *resetWalkAnim = [CCAnimation animationWithSpriteFrames:walkReset delay:0.2f];
+    CCAnimation *okWalkAnim = [CCAnimation animationWithSpriteFrames:walkOK delay:0.2f];
+    
+    self.addAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:addWalkAnim]];
+    self.multAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:multWalkAnim]];
+    self.tenAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:tenWalkAnim]];
+    self.TwentyAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:twentyWalkAnim]];
+    self.thirtyAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:thirtyWalkAnim]];
+    self.fiftyAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:fiftyWalkAnim]];
+    self.hundredAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:hundredWalkAnim]];
+    self.resetAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:resetWalkAnim]];
+    self.okAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:okWalkAnim]];
+    
+    
+    self.spriteAdd = [CCSprite spriteWithSpriteFrameName:@"addsub1.png"];
+    self.spriteMult = [CCSprite spriteWithSpriteFrameName:@"multdiv1.png"];
+    self.spriteTen = [CCSprite spriteWithSpriteFrameName:@"beeTen1.png"];
+    self.spriteTwenty = [CCSprite spriteWithSpriteFrameName:@"beeTwenty1.png"];
+    self.spriteThirty = [CCSprite spriteWithSpriteFrameName:@"beeThirty1.png"];
+    self.spriteFifty = [CCSprite spriteWithSpriteFrameName:@"beefifty1.png"];
+    self.spriteHundred = [CCSprite spriteWithSpriteFrameName:@"beehundred1.png"];
+    self.spriteReset = [CCSprite spriteWithSpriteFrameName:@"reset1.png"];
+    self.spriteOK = [CCSprite spriteWithSpriteFrameName:@"ok1.png"];
+    
+    _spriteAdd.position = ccp(-[_spriteAdd textureRect].size.width/2,510);
+    _spriteMult.position = ccp(-[_spriteMult textureRect].size.width/2, 310);
+    _spriteTen.position = ccp(-300, 620);
+    _spriteTwenty.position = ccp(-400, 570);
+    _spriteThirty.position = ccp(-450,170);
+    _spriteFifty.position = ccp(-300,310);
+    _spriteHundred.position = ccp(-400,420);
+    _spriteReset.position = ccp(1600+[_spriteReset textureRect].size.width/2,620);
+    _spriteOK.position = ccp(1600+[_spriteOK textureRect].size.width/2, 450);
+    
+    _spriteAdd.tag = 0;
+    _spriteMult.tag = 1;
+    _spriteTen.tag = 2;
+    _spriteTwenty.tag = 3;
+    _spriteThirty.tag = 4;
+    _spriteFifty.tag = 5;
+    _spriteHundred.tag = 6;
+    _spriteReset.tag = 7;
+    _spriteOK.tag = 8;
+    
+    [_spriteAdd runAction:_addAction];
+    [_spriteMult runAction:_multAction];
+    [_spriteTen runAction:_tenAction];
+    [_spriteTwenty runAction:_twentyAction];
+    [_spriteThirty runAction:_thirtyAction];
+    [_spriteFifty runAction:_fiftyAction];
+    [_spriteHundred runAction:_hundredAction];
+    [_spriteReset runAction:_resetAction];
+    [_spriteOK runAction:_okAction];
+    
+    id actionMove = [CCMoveTo actionWithDuration:5 position:CGPointMake(200, 510)];
+    [_spriteAdd runAction:[CCSequence actions:actionMove, nil]];
+    id actionMove1 = [CCMoveTo actionWithDuration:5 position:CGPointMake(200, 310)];
+    [_spriteMult runAction:[CCSequence actions:actionMove1, nil]];
+    
+    [beeAdd addChild:_spriteAdd];
+    [beeMult addChild:_spriteMult];
+    [beeTen addChild:_spriteTen];
+    [beeTwenty addChild:_spriteTwenty];
+    [beeThirty addChild:_spriteThirty];
+    [beeFifty addChild:_spriteFifty];
+    [beeHundred addChild:_spriteHundred];
+    [beeReset addChild:_spriteReset];
+    [beeOK addChild:_spriteOK];
+    
+    [allArray addObject:_spriteAdd];
+    [allArray addObject:_spriteMult];
+    [allArray addObject:_spriteTen];
+    [allArray addObject:_spriteTwenty];
+    [allArray addObject:_spriteThirty];
+    [allArray addObject:_spriteFifty];
+    [allArray addObject:_spriteHundred];
+    [allArray addObject:_spriteReset];
+    [allArray addObject:_spriteOK];
+
+}
+
+- (void)update:(ccTime)dt{
     
 }
 
--(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    //    for (UITouch *touch in touches)
-    //    {
-    //        CGPoint location = [touch locationInView:[touch view]];
-    //        location = [[CCDirector sharedDirector]convertToGL:location];
-    //        CGPoint point = [[CCDirector sharedDirector] convertToGL: location];
-    //    }
+-(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
 }
-
-- (void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    //    for (UITouch *touch in touches)
-    //    {
-    //        //得到触摸屏上的点
-    //        CGPoint location = [touch locationInView:[touch view]];
-    //        location = [[CCDirector sharedDirector] convertToGL:location];
-    //        //定义一个点，并把location赋值给point，为了在下面的代码执行中，不改变locaion的值
-    //        CGPoint point = [[CCDirector sharedDirector] convertToGL: location];
-    //    }
-    
-    //这里将jumpArray 改为了sharejumpArray
+- (void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
 }
-
-int i = 0,j = 0;
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-     CGSize size = [[CCDirector sharedDirector]winSize];
-	for( UITouch *touch in touches)
+    CGSize winsize = [CCDirector sharedDirector].winSize;
+    for( UITouch *touch in touches)
     {
         CGPoint location = [touch locationInView:[touch view]];
         location = [[CCDirector sharedDirector]convertToGL:location];
-        CCSprite *spriteadd = [allArray objectAtIndex:0];
-         CGPoint point = [[CCDirector sharedDirector] convertToGL: location];
-        
-        for (CCSprite *sprite in allArray)
+        CGPoint point = [[CCDirector sharedDirector] convertToGL: location];
+        if (clickCount == 0)
         {
-            CGRect rect = [sprite textureRect];
-            rect = CGRectMake(-rect.size.width/2, -rect.size.height/2, rect.size.width, rect.size.height);
-            point = [sprite convertTouchToNodeSpaceAR:touch];
-            if (CGRectContainsPoint(rect, point))
+            for (int k = 0 ; k <2 ; k++)
             {
-                i++;
-                [sprite stopAllActions];
-                [sprite runAction:[CCFadeTo actionWithDuration:1.0f opacity:100]];
-            }
-            else
-            {
-                
-            }
-        }
-    
-        CCSprite *spritemutil = [allArray objectAtIndex:1];
-        CGRect rect = [spriteadd textureRect];
-        CGRect rect1 = [spritemutil textureRect];
-        rect = CGRectMake(-rect.size.width/2, -rect.size.height/2, rect.size.width, rect.size.height);
-        rect1 = CGRectMake(-rect1.size.width/2, -rect1.size.height/2, rect1.size.width, rect1.size.height);
-        CGPoint point1 = [spritemutil convertTouchToNodeSpaceAR:touch];
-        if (CGRectContainsPoint(rect, point))
-        {
-            NSLog(@"点击了加法精灵");
-             spritemutil.flipX = YES;    //翻转精灵
-            [self move:spritemutil :3 :CGPointMake(1300, size.height/2) :1];
-             [self move:spriteadd :3 :CGPointMake(550,size.height/2) :1];
-        }
-        if (CGRectContainsPoint(rect1, point1))
-        {
-            NSLog(@"点击了乘法精灵");
-            spriteadd.flipX = YES;
-            [self move:spriteadd :5:CGPointMake(-40, size.height/2) :1];
-            [self move:spritemutil :5 :CGPointMake(100, size.height/2) :1];
-    //        spritemutil.flipX = YES;
-        }
-        
-        
-        for (int tag = 0; tag<=1; tag ++)               //这里暂时改为1  原来为7
-        {
-            CCSprite *sp = [allArray objectAtIndex:tag];  //这里应该为quanbu
-            CGRect rect = [sp textureRect];
-            rect = CGRectMake(-rect.size.width/2, -rect.size.height/2, rect.size.width, rect.size.height);
-            CGPoint point = [sp convertTouchToNodeSpaceAR:touch];
-            if (CGRectContainsPoint(rect, point))
-            {
-                if (tag == 0)
-                {
-                    [share.jumpArray insertObject:sp atIndex:0];
-                    //_bear.flipX = NO;   翻转动画
-                    
-                }
-                
-                if (tag<2)
-                {
-                    if ([share.jumpArray count]== 0)
-                    {
-                        [share.jumpArray insertObject:sp atIndex:0];
-                        [self move: sp:2:location:2];
-                        break;
-                    }
-                    CCSprite *spp = [share.jumpArray objectAtIndex:0];
-                    if (spp.tag != sp.tag)
-                    {
-                        [share.jumpArray removeObject:spp];
-                        [share.jumpArray insertObject:sp atIndex:0];
-                    }
-                }
-                else if (tag>=2&&tag<=6)
-                {
-                    if ([share.jumpArray count]==1)
-                    {
-                        [share.jumpArray insertObject:sp atIndex:1];
-                        [self move: sp:2:location:2];
-                        break;
-                    }
-                    CCSprite *spp = [share.jumpArray objectAtIndex:1];
-                    [self move: sp:2:location:2];
-                    if (spp.tag!=sp.tag)
-                    {
-                        [share.jumpArray removeObject:spp];
-                        [share.jumpArray insertObject:sp atIndex:1];
-                    }
+                 CCSprite *sprite = [allArray objectAtIndex:k];
+                 int tag = sprite.tag;
+                 CGRect rect = [sprite textureRect];
+                 rect = CGRectMake(-rect.size.width/2, -rect.size.height/2, rect.size.width, rect.size.height);
+                 point = [sprite convertTouchToNodeSpaceAR:touch];
+                 if (CGRectContainsPoint(rect, point))
+                 {
+                        clickCount++;
+                        if (tag == 0)
+                        {
+                            CCSprite *sp = [allArray objectAtIndex:1];
+                            [sp runAction:[CCMoveTo actionWithDuration:10 position:CGPointMake(1114, sp.position.y)]];
+                            [self stopActionByTag:1];
+                        }
+                        else if (tag == 1)
+                        {
+                            CCSprite *sp = [allArray objectAtIndex:0];
+                         //   [sp stopAllActions];
+                            [sp runAction:[CCMoveTo actionWithDuration:10 position:CGPointMake(1114, sp.position.y)]];
+                            [self stopActionByTag:0];
+                        }
+                        [share.jumpArray addObject:sprite];
+                      //  [sprite stopAllActions];
+                        [sprite runAction:[CCFadeTo actionWithDuration:0.3f opacity:0]];
              
-                }
-                else if (tag == 7)
+                        [_spriteTen runAction:[CCMoveTo actionWithDuration:13 position:CGPointMake(630, 620)]];
+                        [_spriteTwenty runAction:[CCMoveTo actionWithDuration:13 position:CGPointMake(220, 570)]];
+                        [_spriteThirty runAction:[CCMoveTo actionWithDuration:13 position:CGPointMake(640, 220)]];
+                        [_spriteFifty runAction:[CCMoveTo actionWithDuration:13 position:CGPointMake(250, 320)]];
+                        [_spriteHundred runAction:[CCMoveTo actionWithDuration:13 position:CGPointMake(570, 420)]];
+                  }
+            }
+        }
+        else if (clickCount == 1)
+        {
+            for (int k = 2 ; k < 7 ; k++)
+            {
+                CCSprite *sp = [allArray objectAtIndex:k];
+                CGRect rect = [sp textureRect];
+                rect = CGRectMake(-rect.size.width/2, -rect.size.height/2, rect.size.width, rect.size.height);
+                point = [sp convertTouchToNodeSpaceAR:touch];
+                if (CGRectContainsPoint(rect, point))
                 {
-                    id action = [CCJumpTo actionWithDuration:2 position:location height:100 jumps:1];
-                    [Icon runAction:action];
-                    // http://blog.csdn.net/xiang08/article/details/8270150 讲的挺详细的
-                    [self scheduleOnce:@selector(starButtonTapped) delay:3];
-                    break;
+                    clickCount++;
+
+                    for (int k = 2 ; k < 7 ; k++)
+                    {
+                        CCSprite *sp1 = [allArray objectAtIndex:k];
+                        if (sp1.tag != sp.tag)
+                        {
+                            [sp1 runAction:[CCMoveTo actionWithDuration:10.0f position:CGPointMake(1114, sp1.position.y)]];
+                        }
+                    }
+               //     [sp stopAllActions];
+
+                    id action1 = [CCMoveTo actionWithDuration:8.0f position:CGPointMake(winsize.width/2, winsize.height/2-[sp textureRect].size.height/2-30)];
+                    [sp runAction:action1];
+                    [share.jumpArray addObject:sp];
+                    [[share.jumpArray objectAtIndex:0] setPosition:CGPointMake(winsize.width/2,winsize.height/2+[sp textureRect].size.height/2+30)];
+                    [[share.jumpArray objectAtIndex:0]runAction:[CCFadeTo actionWithDuration:1 opacity:250]];
+                    id actionMove2= [CCMoveTo actionWithDuration:16 position:CGPointMake(850, 620)];
+                    [_spriteReset runAction:actionMove2];
+                    id actionMove3 = [CCMoveTo actionWithDuration:16 position:CGPointMake(850, 450)];
+                    [_spriteOK runAction:actionMove3];
                 }
-                [self move: sp:2:location:2];
-                NSLog(@"jumpArray = %@",share.jumpArray);
+            }
+        }
+        
+        else if(clickCount == 2)
+        {
+            for (int k = 7; k<9 ; k++)
+            {
+                CCSprite *sprite = [allArray objectAtIndex:k];
+                CGRect rect = [sprite textureRect];
+                rect = CGRectMake(-rect.size.width/2, -rect.size.height/2, rect.size.width, rect.size.height);
+                point = [sprite convertTouchToNodeSpaceAR:touch];
+                if (CGRectContainsPoint(rect, point))
+                {
+                    if(sprite.tag == 7)
+                    {
+                        [_spriteOK runAction:[CCFadeTo actionWithDuration:1 opacity:0]];
+                        [_spriteReset runAction:[CCFadeTo actionWithDuration:1 opacity:0]];
+                        [[share.jumpArray objectAtIndex:0]runAction:[CCFadeTo actionWithDuration:1 opacity:0]];
+                        [[share.jumpArray objectAtIndex:1] runAction:[CCFadeTo actionWithDuration:1 opacity:0]];
+                        [share.jumpArray removeAllObjects];
+                        [[CCSpriteFrameCache sharedSpriteFrameCache]removeSpriteFramesFromFile:@"bee.plist"];
+                        [allArray removeAllObjects];
+                        clickCount = 0;
+                        [self initAnimationSprite];
+                    }
+                    else if (sprite.tag == 8)
+                    {
+                        [self unscheduleUpdate];
+                        [[CCDirector sharedDirector]replaceScene:[CCTransitionPageTurn transitionWithDuration:3.0f scene:[initGameScene scene]]];
+                        break;
+                    }
+                } 
             }
         }
     }
@@ -358,10 +336,10 @@ int i = 0,j = 0;
 
 - (void)starButtonTapped
 {
-  // UINavigationController *navgationController;
-  //  [navgationController pushViewController:[CCDirector sharedDirector] animated:YES];
-  //  [[CCDirector sharedDirector]replaceScene:[CCTransitionSlideInL transitionWithDuration:1.2f scene:[initGameScene scene]]];//从左面
-  //  [[CCDirector sharedDirector]replaceScene:[CCTransitionSlideInB transitionWithDuration:1.2f scene:[initGameScene scene]]];  //从上面
+    // UINavigationController *navgationController;
+    //  [navgationController pushViewController:[CCDirector sharedDirector] animated:YES];
+    //  [[CCDirector sharedDirector]replaceScene:[CCTransitionSlideInL transitionWithDuration:1.2f scene:[initGameScene scene]]];//从左面
+    //  [[CCDirector sharedDirector]replaceScene:[CCTransitionSlideInB transitionWithDuration:1.2f scene:[initGameScene scene]]];  //从上面
     [[CCDirector sharedDirector]replaceScene:[CCTransitionPageTurn transitionWithDuration:1.2f scene:[initGameScene scene]]];  //翻页
 }
 

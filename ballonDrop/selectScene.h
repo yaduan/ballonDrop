@@ -41,6 +41,8 @@
     CCArray *jumpArray;
     
     Shared *share;
+    
+    NSInteger  clickCount;
 
 }
 
