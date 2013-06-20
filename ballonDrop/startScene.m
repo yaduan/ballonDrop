@@ -81,14 +81,14 @@
         spacedust2 = [CCSprite spriteWithFile:@"nature2.png"];
         
         // 3) Determine relative movement speeds for space dust and background
-        CGPoint dustSpeed = ccp(0.1, 0.1);
+        CGPoint dustSpeed = ccp(0.2, 0.2);
         
         // 4) Add children to CCParallaxNode
         [_backgroundNode addChild:spacedust1 z:0 parallaxRatio:dustSpeed positionOffset:ccp(spacedust1.contentSize.width/2,spacedust1.contentSize.height/2)];
         [_backgroundNode addChild:spacedust2 z:0 parallaxRatio:dustSpeed positionOffset:ccp(spacedust1.contentSize.width/2+spacedust2.contentSize.width-4,spacedust1.contentSize.height/2)];
         
         [self scheduleUpdate];
-        [self scheduleOnce:@selector(enterNextScene) delay:6];
+        [self scheduleOnce:@selector(enterNextScene) delay:5];
     }
     return self;
 }

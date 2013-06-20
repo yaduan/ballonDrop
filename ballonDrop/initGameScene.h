@@ -14,7 +14,7 @@
 #import "randomOperand.h"
 #import "makeNewSprite.h"
 
-#define speed 100.0
+#define speed 110.0
 
 @interface initGameScene : CCLayer
 {
@@ -23,6 +23,7 @@
     Shared  *sharedArray;
     makeNewSprite *makeSprite;
     CCSprite *resultSprite;
+    CCSprite *djsSprite;
     double timer;
     
     float currentShowRect;

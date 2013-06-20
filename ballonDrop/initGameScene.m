@@ -54,7 +54,7 @@
         sharedArray.doRightNum = 0;
         sharedArray.dateArray = [[NSMutableArray alloc] init];
         
-        CCSprite *bg = [CCSprite spriteWithFile:@"wang1.png"];
+        CCSprite *bg = [CCSprite spriteWithFile:@"backgroundg.png"];
         bg.position = ccp(bg.contentSize.width/2,bg.contentSize.height/2);
         [self addChild:bg]; //将精灵加到layer上
         
@@ -133,33 +133,28 @@
 {
     DebugMethod();
     CGSize size = [[CCDirector sharedDirector]winSize];
-    resultSprite = [CCSprite spriteWithFile:@"88.png"];
-    CGPoint spritePosition = CGPointMake(resultSprite.contentSize.width/2-11,resultSprite.contentSize.height/2+8);
+    resultSprite = [CCSprite spriteWithFile:@"result1.png"];
+    CGPoint spritePosition = CGPointMake(resultSprite.contentSize.width/2-6,resultSprite.contentSize.height/2+8);
     NSNumber *resultNum = [sharedArray.resultAndOperateArray objectAtIndex:0];
     NSString *resultString = [NSString stringWithFormat:@"%@",resultNum];
-    ccColor3B color = ccc3(125, 255, 255);
-    resultSprite = [makeNewSprite callmakeSprite:@"88.png" :resultString :@"Arial" :70 :color :CGRectMake(0,0,75,70) :spritePosition];
-    resultSprite.position = CGPointMake([resultSprite texture].contentSize.width/2-5,
+    ccColor3B color = ccc3(5,253, 221);
+    resultSprite = [makeNewSprite callmakeSprite:@"result1.png" :resultString :@"Arial" :70 :color :CGRectMake(0,0,75,70) :spritePosition];
+    resultSprite.position = CGPointMake([resultSprite texture].contentSize.width/2,
                                         size.height-[resultSprite texture].contentSize.height/2);
     [self addChild:resultSprite z:1 tag:0];
-    
 }
 
 -(void)initPauseStartSprite    //初始化退出精灵
 {
     DebugMethod();
     CGSize size = [[CCDirector sharedDirector]winSize];
-    CGPoint spritePosition = CGPointMake(resultSprite.contentSize.width/2-26,resultSprite.contentSize.height/2-8);
-    CGRect labelPosition = CGRectMake(0,0,60,35);
-    ccColor3B color = ccc3(125, 255, 255);
-    CCSprite *endSprite= [makeNewSprite callmakeSprite:@"balloon.png" :@"退出" :@"Arial":30 :color:labelPosition :spritePosition];
-    CCSprite *endSprite_= [makeNewSprite callmakeSprite:@"balloon1.png" :@"退出" :@"Arial":30 :color:labelPosition :spritePosition];
+    CCSprite *endSprite = [CCSprite spriteWithFile:@"end.png"];
+    CCSprite *endSprite_ = [CCSprite spriteWithFile:@"end.png"];
     CCMenuItemSprite *endButton =[CCMenuItemSprite itemWithNormalSprite:endSprite
                                                          selectedSprite:endSprite_
                                                                  target:self
                                                                selector:@selector(resultScene)];
-    endButton.position = ccp(size.width-[[endSprite texture]contentSize].width/2, size.height-70);
-   // CCMenu *menu = [CCMenu menuWithItems:pauseButton,endButton,nil];
+    endButton.position = ccp(size.width-[endSprite textureRect].size.width/2,size.height-[endSprite textureRect].size.height/2);
     CCMenu *menu = [CCMenu menuWithItems:endButton,nil];
     menu.position = CGPointZero;
     [self addChild:menu z:2];
@@ -186,7 +181,8 @@
 -(void)stopAllAction
 {
     DebugMethod();
-    for (int i = 0; i < [sharedArray.allOpeSpriteArray count]; i++) {
+    for (int i = 0; i < [sharedArray.allOpeSpriteArray count]; i++)
+    {
         CCSprite *spider = [sharedArray.allOpeSpriteArray objectAtIndex:i];
         [spider stopAllActions];
     }
@@ -195,11 +191,11 @@
 -(void)initScoreTitle
 {
     DebugMethod();
-    CCLabelTTF *totalQueTitle = [CCLabelTTF labelWithString:@"totalQueNum: " fontName:@"Marker Felt"fontSize:25];
-    CCLabelTTF *doRightTitle = [CCLabelTTF labelWithString:@"doRightNum: " fontName:@"Marker Felt" fontSize:25];
+    CCLabelTTF *totalQueTitle = [CCLabelTTF labelWithString:@"totalQueNum: " fontName:@"Marker Felt"fontSize:32];
+    CCLabelTTF *doRightTitle = [CCLabelTTF labelWithString:@"doRightNum: " fontName:@"Marker Felt" fontSize:32];
     
-    totalQueTitle.position = ccp(80, 600);
-    doRightTitle.position = ccp(80,530);
+    totalQueTitle.position = ccp(95, 550);
+    doRightTitle.position = ccp(95,440);
     [self addChild:totalQueTitle];
     [self addChild:doRightTitle];
 }
@@ -211,10 +207,10 @@
     NSNumber *right = [NSNumber numberWithInt:sharedArray.doRightNum];
     NSString *totalString = [NSString stringWithFormat:@"%@", total];
     NSString *rightString = [NSString stringWithFormat:@"%@", right];
-    totalQue = [CCLabelTTF labelWithString:totalString fontName:@"Georgia-BoldItalic" fontSize:28];
-    doright =  [CCLabelTTF labelWithString:rightString fontName:@"Georgia-BoldItalic" fontSize:28];
-    totalQue.position = ccp(100, 570);
-    doright.position = ccp(100,500);
+    totalQue = [CCLabelTTF labelWithString:totalString fontName:@"Georgia-BoldItalic" fontSize:35];
+    doright =  [CCLabelTTF labelWithString:rightString fontName:@"Georgia-BoldItalic" fontSize:35];
+    totalQue.position = ccp(100, 520);
+    doright.position = ccp(100,410);
     [self addChild:totalQue];
     [self addChild:doright];
 }
@@ -225,7 +221,7 @@
     CGSize size = [[CCDirector sharedDirector]winSize];
     //这里以后要加个背景图片
     timeLimit = [CCLabelTTF labelWithString:@"" fontName:@"Arial" fontSize:48];
-    timeLimit.position = CGPointMake(size.width/2,size.height-50);
+    timeLimit.position = CGPointMake(size.width/2,size.height-60);
     timeLimit.anchorPoint = CGPointMake(0.5, 0.5);
     [self addChild:timeLimit z:1];
 }
@@ -469,9 +465,9 @@
     {
         position.x = sprite.contentSize.width/2;
     }
-    if(position.y<sprite.contentSize.height/2)
+    if(position.y<sprite.contentSize.height/2+100)
     {
-        position.y = sprite.contentSize.height/2;
+        position.y = sprite.contentSize.height/2+200;
     }
     float time = ccpDistance(position, sprite.position)/speed;
     

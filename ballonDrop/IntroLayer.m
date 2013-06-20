@@ -10,6 +10,8 @@
 // Import the interfaces
 #import "IntroLayer.h"
 #import "startScene.h"
+#import "selectScene.h"
+#import "initGameScene.h"
 
 
 #pragma mark - IntroLayer

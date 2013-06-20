@@ -147,15 +147,15 @@
     self.spriteReset = [CCSprite spriteWithSpriteFrameName:@"reset1.png"];
     self.spriteOK = [CCSprite spriteWithSpriteFrameName:@"ok1.png"];
     
-    _spriteAdd.position = ccp(-[_spriteAdd textureRect].size.width/2,510);
-    _spriteMult.position = ccp(-[_spriteMult textureRect].size.width/2, 310);
-    _spriteTen.position = ccp(-300, 620);
-    _spriteTwenty.position = ccp(-400, 570);
-    _spriteThirty.position = ccp(-450,170);
-    _spriteFifty.position = ccp(-300,310);
-    _spriteHundred.position = ccp(-400,420);
-    _spriteReset.position = ccp(1600+[_spriteReset textureRect].size.width/2,620);
-    _spriteOK.position = ccp(1600+[_spriteOK textureRect].size.width/2, 450);
+    _spriteAdd.position = ccp(20,510);
+    _spriteMult.position = ccp(20, 310);
+    _spriteTen.position = ccp(-250, 650);
+    _spriteTwenty.position = ccp(-350, 560);
+    _spriteThirty.position = ccp(-400,170);
+    _spriteFifty.position = ccp(-250,280);
+    _spriteHundred.position = ccp(-350,420);
+    _spriteReset.position = ccp(1024+[_spriteReset textureRect].size.width/2,620);
+    _spriteOK.position = ccp(1024+[_spriteOK textureRect].size.width/2, 450);
     
     _spriteAdd.tag = 0;
     _spriteMult.tag = 1;
@@ -177,9 +177,9 @@
     [_spriteReset runAction:_resetAction];
     [_spriteOK runAction:_okAction];
     
-    id actionMove = [CCMoveTo actionWithDuration:5 position:CGPointMake(200, 510)];
+    id actionMove = [CCMoveTo actionWithDuration:4 position:CGPointMake(500, 510)];   //这里原先为5
     [_spriteAdd runAction:[CCSequence actions:actionMove, nil]];
-    id actionMove1 = [CCMoveTo actionWithDuration:5 position:CGPointMake(200, 310)];
+    id actionMove1 = [CCMoveTo actionWithDuration:4 position:CGPointMake(500, 310)];
     [_spriteMult runAction:[CCSequence actions:actionMove1, nil]];
     
     [beeAdd addChild:_spriteAdd];
@@ -225,35 +225,25 @@
             for (int k = 0 ; k <2 ; k++)
             {
                  CCSprite *sprite = [allArray objectAtIndex:k];
-                 int tag = sprite.tag;
                  CGRect rect = [sprite textureRect];
                  rect = CGRectMake(-rect.size.width/2, -rect.size.height/2, rect.size.width, rect.size.height);
                  point = [sprite convertTouchToNodeSpaceAR:touch];
                  if (CGRectContainsPoint(rect, point))
                  {
                         clickCount++;
-                        if (tag == 0)
-                        {
-                            CCSprite *sp = [allArray objectAtIndex:1];
-                            [sp runAction:[CCMoveTo actionWithDuration:10 position:CGPointMake(1114, sp.position.y)]];
-                            [self stopActionByTag:1];
-                        }
-                        else if (tag == 1)
-                        {
-                            CCSprite *sp = [allArray objectAtIndex:0];
-                         //   [sp stopAllActions];
-                            [sp runAction:[CCMoveTo actionWithDuration:10 position:CGPointMake(1114, sp.position.y)]];
-                            [self stopActionByTag:0];
-                        }
+                        CCSprite *sp = [allArray objectAtIndex:1];
+                        [sp runAction:[CCMoveTo actionWithDuration:5 position:CGPointMake(900,-100)]];  //这里原先为10
+                        [self stopActionByTag:1];
+                        CCSprite *sp1 = [allArray objectAtIndex:0];
+                        [sp1 runAction:[CCMoveTo actionWithDuration:5 position:CGPointMake(900,900)]];
+                        [self stopActionByTag:0];
                         [share.jumpArray addObject:sprite];
-                      //  [sprite stopAllActions];
-                        [sprite runAction:[CCFadeTo actionWithDuration:0.3f opacity:0]];
              
-                        [_spriteTen runAction:[CCMoveTo actionWithDuration:13 position:CGPointMake(630, 620)]];
-                        [_spriteTwenty runAction:[CCMoveTo actionWithDuration:13 position:CGPointMake(220, 570)]];
-                        [_spriteThirty runAction:[CCMoveTo actionWithDuration:13 position:CGPointMake(640, 220)]];
-                        [_spriteFifty runAction:[CCMoveTo actionWithDuration:13 position:CGPointMake(250, 320)]];
-                        [_spriteHundred runAction:[CCMoveTo actionWithDuration:13 position:CGPointMake(570, 420)]];
+                        [_spriteTen runAction:[CCMoveTo actionWithDuration:6 position:CGPointMake(640, 650)]];    //这里原先为13
+                        [_spriteTwenty runAction:[CCMoveTo actionWithDuration:6 position:CGPointMake(220, 560)]];
+                        [_spriteThirty runAction:[CCMoveTo actionWithDuration:6 position:CGPointMake(640, 170)]];
+                        [_spriteFifty runAction:[CCMoveTo actionWithDuration:6 position:CGPointMake(250, 280)]];
+                        [_spriteHundred runAction:[CCMoveTo actionWithDuration:6 position:CGPointMake(570, 420)]];
                   }
             }
         }
@@ -272,21 +262,19 @@
                     for (int k = 2 ; k < 7 ; k++)
                     {
                         CCSprite *sp1 = [allArray objectAtIndex:k];
-                        if (sp1.tag != sp.tag)
-                        {
-                            [sp1 runAction:[CCMoveTo actionWithDuration:10.0f position:CGPointMake(1114, sp1.position.y)]];
-                        }
+                        [sp1 runAction:[CCMoveTo actionWithDuration:3 position:CGPointMake(arc4random()%1000, arc4random()%768)]];
+                        [sp1 runAction:[CCFadeTo actionWithDuration:0.5 opacity:0]];
                     }
-               //     [sp stopAllActions];
-
-                    id action1 = [CCMoveTo actionWithDuration:8.0f position:CGPointMake(winsize.width/2, winsize.height/2-[sp textureRect].size.height/2-30)];
-                    [sp runAction:action1];
+                    
                     [share.jumpArray addObject:sp];
-                    [[share.jumpArray objectAtIndex:0] setPosition:CGPointMake(winsize.width/2,winsize.height/2+[sp textureRect].size.height/2+30)];
-                    [[share.jumpArray objectAtIndex:0]runAction:[CCFadeTo actionWithDuration:1 opacity:250]];
-                    id actionMove2= [CCMoveTo actionWithDuration:16 position:CGPointMake(850, 620)];
+                    [[share.jumpArray objectAtIndex:0] setPosition:CGPointMake(-150,winsize.height/2+[sp textureRect].size.height/2+30)];
+                    [[share.jumpArray objectAtIndex:0]runAction:[CCMoveTo actionWithDuration:4 position:CGPointMake(winsize.width/2-100, winsize.height/2+[sp textureRect].size.height/2+30)]];
+                    [[share.jumpArray objectAtIndex:1] setPosition:CGPointMake(-150,winsize.height/2-[sp textureRect].size.height/2-30)];
+                    [[share.jumpArray objectAtIndex:1] runAction:[CCFadeTo actionWithDuration:0.5 opacity:255]];
+                    [[share.jumpArray objectAtIndex:1]runAction:[CCMoveTo actionWithDuration:4 position:CGPointMake(winsize.width/2-100, winsize.height/2-[sp textureRect].size.height/2-30)]];
+                    id actionMove2= [CCMoveTo actionWithDuration:4 position:CGPointMake(750, 620)];
                     [_spriteReset runAction:actionMove2];
-                    id actionMove3 = [CCMoveTo actionWithDuration:16 position:CGPointMake(850, 450)];
+                    id actionMove3 = [CCMoveTo actionWithDuration:4 position:CGPointMake(750, 450)];
                     [_spriteOK runAction:actionMove3];
                 }
             }
@@ -324,14 +312,6 @@
             }
         }
     }
-}
-
--(void)move:(CCSprite *)sprite:(ccTime)dur:(CGPoint)pos:(ccTime)delay         //移到一个位置
-{
-    id action0 = [CCMoveTo actionWithDuration:dur position:pos];
-    id action1 = [CCFadeTo actionWithDuration:delay opacity:0];
-    id action = [CCSequence actions:action0,action1,nil];
-    [sprite runAction:action];
 }
 
 - (void)starButtonTapped
