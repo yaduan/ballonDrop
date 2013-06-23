@@ -14,7 +14,7 @@
 
 -(record *)initWithFrame:(CGRect)rect
 {
-    self = [super initWithFrame:rect] ;
+    self = [super initWithFrame:rect];
     [self setAlpha:0.9];
 
     [self setBackgroundColor:MainBackgroundColor];

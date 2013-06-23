@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
 #import "Shared.h"
+#import "aboutGame.h"
 
 @interface selectScene : CCLayer
 {
@@ -37,12 +38,24 @@
     CCSprite *spriteReset;
     CCSprite *spriteOK;
     
+    CCLabelTTF *labelabout;
+    CCLabelTTF *labelone;
+    CCLabelTTF *labeltwo;
+    CCLabelTTF *labelthree;
+    CCLabelTTF *labelfour;
+    CCLabelTTF *labelfive;
+    CCLabelTTF *labelsix;
+    CCLabelTTF *labelseven;
+    
     CCArray *allArray;
     CCArray *jumpArray;
     
     Shared *share;
+    aboutGame *rec;
     
     NSInteger  clickCount;
+    NSInteger  count;
+    
 
 }
 

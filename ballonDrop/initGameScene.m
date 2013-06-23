@@ -7,29 +7,22 @@
 
 
 #import "initGameScene.h"
-#import "touchEvents.h"
-#import "randomOperand.h"
 #import "restartGame.h"
-#import "Shared.h"
 #import "getGameTime.h"
 #import "operatorType.h"
 #import "getTag.h"
 #import "encourage.h"
 #import "record.h"
 #import "selectScene.h"
-#import "CGPointExtension.h"
-#import "selectScene.h"
-
-#define RESTITUTION_CONSTANT (0.75) //弹性系统的
 
 @interface initGameScene ()
-
 @property (nonatomic, copy) NSString *dataStr;
 @end
 @implementation initGameScene
 
-@synthesize resultSprite;
+@synthesize resultSprite = _resultSprite;
 @synthesize dataStr = _dataStr;
+
 +(CCScene *)scene
 {
     DebugMethod();
@@ -52,7 +45,7 @@
         sharedArray.FLAG = -1;
         sharedArray.totalQuesNum = 0;
         sharedArray.doRightNum = 0;
-        sharedArray.dateArray = [[NSMutableArray alloc] init];
+        sharedArray.dateArray =[CCArray arrayWithCapacity:5];     //[[NSMutableArray alloc] init];
         
         CCSprite *bg = [CCSprite spriteWithFile:@"backgroundg.png"];
         bg.position = ccp(bg.contentSize.width/2,bg.contentSize.height/2);
@@ -240,6 +233,7 @@
     [weekArray addObject:@"星期六"];
     
     NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+                                                                                       //原来这里没有autorelease
     NSDate *now;
     NSDateComponents *comps = [[NSDateComponents alloc] init];
     NSInteger unitFlags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSWeekdayCalendarUnit |
@@ -292,6 +286,8 @@
     totalTimeString = [totalTimeString stringByAppendingString:rightString];
     [sharedArray.dateArray addObject:totalTimeString];
     self.dataStr = totalTimeString;
+    
+   [calendar release];
 }
 
 -(BOOL) saveGameData:(NSString *)data  saveFileName:(NSString *)fileName
@@ -504,260 +500,6 @@
         [self scheduleOnce:@selector(createNextThreeOpeNumAddSubMutilDevSprite) delay:0.2];
     }
 }
-
-//-(void) checkForCollision
-//{
-//    for(int i =0;i<[sharedArray.allOpeSpriteArray count];i++)
-//    {
-//        CCSprite *ballon = [sharedArray.allOpeSpriteArray objectAtIndex:i];
-//        for(int j = i+1 ; j<[sharedArray.allOpeSpriteArray count];j++)
-//        {
-//            CCSprite *ballon1 = [sharedArray.allOpeSpriteArray objectAtIndex:j];
-//            if([self iscollision:ballon:ballon1])
-//            {
-//                [self resolveCollision:ballon :ballon1];
-//            }
-//        }
-//    }
-//}
-
--(BOOL)iscollision:(CCSprite *)balloon:(CCSprite *)balloon1
-{
-    DebugMethod();
-    float distance = ccpDistance(balloon.position, balloon1.position);
-    float dis = (balloon.position.x - balloon1.position.x)*(balloon.position.x - balloon1.position.x)+(balloon.position.y - balloon1.position.y)*(balloon.position.y - balloon1.position.y);
-    if(distance*distance<=dis)
-    {
-        return true;
-    }
-    return false;
-}
-
--(void)resolveCollision:(CCSprite *)balloon:(CCSprite *)balloon1
-{
-    DebugMethod();
-    CGPoint direction = ccpSub(balloon.position, balloon1.position);
-    float d = ccpLength(direction);
-    float dis = (balloon.position.x - balloon1.position.x)*(balloon.position.x - balloon1.position.x)+(balloon.position.y - balloon1.position.y)*(balloon.position.y - balloon1.position.y);
- //   float distance = ccpDistance(balloon.position, balloon1.position);
-    //下面这一点不对，一会还要改
-    CGPoint targetPos = ccpMult(direction,(sqrt(dis)-d)/d);
-    float im1 = 1/12.56637;
-    float im2 = 1/12.56637;
-    balloon.position = ccpAdd(balloon.position,ccpMult(targetPos, (im2/(im1+im2))));
-    balloon1.position = ccpSub(balloon1.position, ccpMult(targetPos, (im2 / (im1 + im2))));
-    
-    CGPoint v = CGPointMake(-4.31141639,-24.8381977);
-    float vn = ccpDot(v,ccpNormalize(targetPos));
-    if (vn>0.0f)  return;
-    float i = (-(1.0f+0.75)*vn)/(12.56637+12.56637);
-    CGPoint impulse = ccpMult(targetPos, i);
-}
-
--(void) pathMove:(CCSprite*) sprite
-{
-    CGSize size = [[CCDirector sharedDirector] winSize];
-    double randX = arc4random()% (int)(size.width +50);
-    double randY = arc4random()% (int)(size.height +50);
-    
-    CGPoint start = sprite.position;
-    CGPoint end=ccp(randX, randY);
-    
-    float finalDistance=ccpDistance(start, end);
-//    float speedToMove = MIN_SPEED + arc4random()%(speed - MIN_SPEED);
-    float durationToMove = finalDistance/speed;
-    
-    CCMoveTo *spawnAction = [CCMoveTo actionWithDuration:durationToMove * 6.0 position:ccp(randX,randY)];
-    [sprite runAction:spawnAction];
-}
-
-
-
-////精灵碰撞
--(void) checkForCollision
-{
-    CGSize size = [[CCDirector sharedDirector]winSize];
-    for(int i =0;i<[sharedArray.allOpeSpriteArray count];i++)
-    {
-        CCSprite *ballon = [sharedArray.allOpeSpriteArray objectAtIndex:i];
-        CGRect projectileRects = CGRectMake(ballon.position.x - (ballon.contentSize.width/2),
-                                            ballon.position.y - (ballon.contentSize.height/2),
-                                            ballon.contentSize.width,
-                                            ballon.contentSize.height);
-        for(int j = i+1 ; j<[sharedArray.allOpeSpriteArray count];j++)
-        {
-            CCSprite *ballon1 = [sharedArray.allOpeSpriteArray objectAtIndex:j];
-//            while (1) {
-//   
-            CGRect targetRect = CGRectMake(ballon1.position.x - (ballon1.contentSize.width/2),
-                                           ballon1.position.y - (ballon1.contentSize.height/2),
-                                           ballon1.contentSize.width,
-                                           ballon1.contentSize.height);
-            
-            if(CGRectIntersectsRect(projectileRects, targetRect))
-            {
-                CGPoint diff = ccpSub(ballon.position, ballon1.position);
-                if(diff.x<0)
-                {
-//                    [self pathMove:ballon];
-//                    [self pathMove:ballon1];
-                    CGPoint velocityUp = CGPointMake(0, 30);
-                    velocityUp = ccpAdd(ballon.position, velocityUp);
-                    float time = ccpDistance(ballon.position,velocityUp)/speed;
-                    id actions = [CCMoveTo actionWithDuration:time position:velocityUp];
-                     [ballon runAction:actions];
-                    
-                    CGPoint velocityright = CGPointMake(30, 0);
-                    velocityright = ccpAdd(ballon1.position, velocityright);
-                    float time1 = ccpDistance(ballon1.position,velocityright)/speed;
-                    id actions1 = [CCMoveTo actionWithDuration:time1 position:velocityright];
-                    [ballon1 runAction:actions1];
-                }
-                else
-                {
-//                    [self pathMove:ballon];
-//                    [self pathMove:ballon1];
-                    CGPoint velocityUp = CGPointMake(0, 30);
-                    velocityUp = ccpAdd(ballon1.position, velocityUp);
-                    float time1 = ccpDistance(ballon1.position,velocityUp)/speed;
-                    id actions1 = [CCMoveTo actionWithDuration:time1 position:velocityUp];
-                    [ballon1 runAction:actions1];
-                    
-                    CGPoint velocityright = CGPointMake(30, 0);
-                    velocityright = ccpAdd(ballon.position, velocityright);
-                    float time = ccpDistance(ballon.position,velocityright)/speed;
-                    id actions = [CCMoveTo actionWithDuration:time position:velocityright];
-                    [ballon runAction:actions];
-
-                }
-               // [self makeBallonPositionRandom:ballon1];
-            }
-            else break;
-            }
-        }
-    }
-
-//                NSLog(@"balloon.tag = %d",ballon.tag);
-//                NSLog(@"balloon1.tag = %d",ballon1.tag);
-//                CGPoint diff = ccpSub(ballon.position, ballon1.position);
-//                if(diff.x<0)
-//                {
-//                    CGPoint velocityUp = CGPointMake(0, 10);
-//                    CGPoint velocityright = CGPointMake(10, 0);
-//                    velocityUp = ccpAdd(ballon.position, velocityUp);
-//                    velocityright = ccpAdd(ballon1.position, velocityright);
-//                    
-//                    float time = ccpDistance(ballon.position,velocityUp)/speed;
-//                    
-//                    id actions = [CCMoveTo actionWithDuration:time position:velocityUp];
-//                    [ballon runAction:actions];
-//
-//                    id actions1 = [CCMoveTo actionWithDuration:time position:velocityright];
-//                    [ballon1 runAction:actions1];
-
-//                    CGPoint position = CGPointMake(size.width*CCRANDOM_0_1()-ballon.contentSize.width/2, size.height*CCRANDOM_0_1()-ballon.contentSize.width/2);
-//                    if (position.x<ballon.position.x)
-//                    {
-//////                        ballon.position = position;
-//                        float time = ccpDistance(position, ballon.position)/speed;
-//
-//                        id actions = [CCMoveTo actionWithDuration:time position:position];
-//                        [ballon runAction:actions];
-//                    }
-//                    else if (ballon1.position.x<position.x)
-//                    {
-////                        ballon1.position = position;
-//                        float time = ccpDistance(position, ballon1.position)/speed;
-//                        
-//                        id actions = [CCMoveTo actionWithDuration:time position:position];
-//                        [ballon1 runAction:actions];
-//                    }
-//                }
-//                else
-//                {
-//                    CGPoint velocityUp = CGPointMake(0, 10);
-//                    CGPoint velocityright = CGPointMake(10, 0);
-//                    velocityUp = ccpAdd(ballon.position, velocityright);
-//                    velocityright = ccpAdd(ballon1.position, velocityUp);
-//                    
-//                    float time = ccpDistance(ballon.position,velocityUp)/speed;
-//                    
-//                    id actions = [CCMoveTo actionWithDuration:time position:velocityUp];
-//                    [ballon1 runAction:actions];
-//                    
-//                    id actions1 = [CCMoveTo actionWithDuration:time position:velocityright];
-//                    [ballon runAction:actions1];
-//                    
-//                    CGPoint position = CGPointMake(size.width*CCRANDOM_0_1()-ballon.contentSize.width/2, size.height*CCRANDOM_0_1()-ballon1.contentSize.width/2);
-//                    if (position.x>ballon.position.x)
-//                    {
-//                        float time = ccpDistance(position, ballon.position)/speed;
-//                        
-//                        id actions = [CCMoveTo actionWithDuration:time position:position];
-//                        [ballon runAction:actions];
-//                    }
-//                    else if (ballon1.position.x>position.x)
-//                    {
-//                        float time = ccpDistance(position, ballon1.position)/speed;
-//                        
-//                        id actions = [CCMoveTo actionWithDuration:time position:position];
-//                        [ballon1 runAction:actions];
-//                    }
-//
-//                }
-//                    float distance = ccpDistance(ballon.position, ballon1.position);
-//                //ballon.position = ccpAdd(ballon.position,);
-//                CGPoint direction = ccpSub(ballon1.position, ballon.position);
-//                CGPoint targetPos = ccpAdd(ballon.position, ccpMult(ccp(direction.x/distance, direction.y/distance),[ballon texture].contentSize.width));
-//                [ballon1 stopAllActions];
-//                id action = [CCMoveTo actionWithDuration:0.1 position:targetPos];
-//                [ballon1 runAction:action];
-//            }
-//        }
-//        }
-//    }
-//}
-
-//        - (void)update:(ccTime)dt {
-//            
-//            
-//            
-//            CGRect projectileRect = CGRectMake(projectile.position.x - (projectile.contentSize.width/2),
-//                                               projectile.position.y - (projectile.contentSize.height/2),
-//                                               projectile.contentSize.width,
-//                                               projectile.contentSize.height);
-//            
-//            //CGRectMake(0,220,320,50);
-//            CGRect targetRects =  CGRectMake(_monkey.position.x - (_monkey.contentSize.width/2),
-//                                             _monkey.position.y - (_monkey.contentSize.height/2),
-//                                             _monkey.contentSize.width,
-//                                             _monkey.contentSize.height);
-//            
-//            if (CGRectIntersectsRect(projectileRect, targetRects)) {
-//                NSLog(@"ha ha Collision detected"); 
-//            }
-//        
-//    }
-    //    float ballonSize = [[sharedArray.allOpeSpriteArray lastObject] texture].contentSize.width;
-    //    float ballonCollisionRadius = ballonSize * 0.4f;
-    //    float maxCollisionDistance = ballonCollisionRadius + ballonCollisionRadius;
-    //    CCSprite* ballon = [sharedArray.allOpeSpriteArray objectAtIndex:[sharedArray.allOpeSpriteArray count]*CCRANDOM_0_1()];
-    //    CCSprite *ballon1 = [sharedArray.allOpeSpriteArray objectAtIndex:[sharedArray.allOpeSpriteArray count]*CCRANDOM_0_1()];
-    //
-    //    float distance = ccpDistance(ballon.position, ballon1.position);
-    //    if (distance < maxCollisionDistance)
-    //    {
-    //        [ballon stopAllActions];
-    //        [ballon1 stopAllActions];
-    //        CGPoint moveDir = ccpSub(ballon1.position, ballon.position);
-    //        CGPoint targetPos = ccpAdd(ballon1.position, ccpMult(ccp(moveDir.x/distance, moveDir.y/distance),10));
-    //        id action  = [CCMoveTo actionWithDuration:0.2 position:targetPos];
-    //        [ballon runAction:action];
-    //       // [ballon1 runAction:action];
-    //      //  [self resetBallon:ballon];
-    //      //  [self resetBallon:ballon];
-    //    }
-//}
 
 #pragma mark - Deallocation
 

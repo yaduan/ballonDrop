@@ -108,8 +108,8 @@
 -(void)dealloc
 {
     [super dealloc];
-    self.boySprite = nil;
-    self.girlSprite = nil;
+//    self.boySprite = nil;
+//    self.girlSprite = nil;
 }
 
 @end

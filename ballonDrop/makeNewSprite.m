@@ -36,7 +36,8 @@
 +(id)callmakeSprite:(NSString *)sprite:(NSString *)numString:(NSString *)fontName:(NSInteger)size:(ccColor3B)color:(CGRect)rect:(CGPoint)position
 {
     DebugMethod();
-    return [[self alloc]makeSprite:sprite :numString :fontName :size :color : rect :position];
+    return [[self alloc] makeSprite:sprite :numString :fontName :size :color : rect :position];
+    //这个地方不能 autorelease  要不然会崩溃
 }
 
 @end

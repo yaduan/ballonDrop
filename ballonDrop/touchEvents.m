@@ -23,12 +23,13 @@
 @synthesize ballonarray;
 @synthesize numArray;
 @synthesize cutBallonArray;
-//kdfljgktjhtrkjh
+
 -(id)init
 {
 
    if(self = [super init])
    {
+       DebugMethod();
        sharedArray = [Shared shared];
        sharedArray.FLAG = -1;
        sharedArray.doRightNum = 0;

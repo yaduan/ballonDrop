@@ -39,12 +39,6 @@
     return scene;
 }
 
--(void)bearMoveEnded
-{
-    [Icon stopAction:walkAction];
-    moving = FALSE;
-}
-
 -(id) init
 {
     if( (self=[super init]) )
@@ -54,15 +48,42 @@
         self.isTouchEnabled = YES;
         
         clickCount = 0;
+        count = 0;
         
         CGSize winsize = [[CCDirector sharedDirector]winSize];
         CCSprite *background = [CCSprite spriteWithFile:@"background.png"];
         [background setPosition:ccp(winsize.width/2, winsize.height/2)];
         background.anchorPoint = ccp(0.5, 0.5);
         [self addChild:background z:-1];
+        
         [self initAnimationSprite];
+        
+        rec = [[aboutGame alloc]initWithFrame:CGRectMake(0.0f, 0.0f, 500, 550)];
+        [rec setCenter:CGPointMake(580.0f, 1000.0f)];
+        
+        CCMenuItemFont* toggleOn = [CCMenuItemFont itemWithString:@"游戏说明"];
+        CCMenuItemFont* toggleOff = [CCMenuItemFont itemWithString:@"我知道了"];
+        CCMenuItemToggle* item3 = [CCMenuItemToggle itemWithTarget:self selector:@selector(labelTouched) items:toggleOn, toggleOff, nil];
+        // 用菜单项生成菜单
+        CCMenu* menu = [CCMenu menuWithItems:item3, nil];
+        menu.position = CGPointMake(winsize.width/2+5,winsize.height-50);
+        [self addChild:menu];
     }
     return self;
+}
+
+-(void)labelTouched
+{
+    count ++ ;
+    if (count%2 == 1)
+    {
+        [rec presentView];
+        [[[CCDirector sharedDirector] view] addSubview:rec];
+    }
+    else if (count%2 == 0)
+    {
+        [rec removeView];
+    }
 }
 
 -(void)initAnimationSprite
@@ -220,6 +241,7 @@
         CGPoint location = [touch locationInView:[touch view]];
         location = [[CCDirector sharedDirector]convertToGL:location];
         CGPoint point = [[CCDirector sharedDirector] convertToGL: location];
+
         if (clickCount == 0)
         {
             for (int k = 0 ; k <2 ; k++)
@@ -232,14 +254,14 @@
                  {
                         clickCount++;
                         CCSprite *sp = [allArray objectAtIndex:1];
-                        [sp runAction:[CCMoveTo actionWithDuration:5 position:CGPointMake(900,-100)]];  //这里原先为10
+                        [sp runAction:[CCMoveTo actionWithDuration:5 position:CGPointMake(900,-100)]];
                         [self stopActionByTag:1];
                         CCSprite *sp1 = [allArray objectAtIndex:0];
                         [sp1 runAction:[CCMoveTo actionWithDuration:5 position:CGPointMake(900,900)]];
                         [self stopActionByTag:0];
                         [share.jumpArray addObject:sprite];
              
-                        [_spriteTen runAction:[CCMoveTo actionWithDuration:6 position:CGPointMake(640, 650)]];    //这里原先为13
+                        [_spriteTen runAction:[CCMoveTo actionWithDuration:6 position:CGPointMake(640, 650)]];
                         [_spriteTwenty runAction:[CCMoveTo actionWithDuration:6 position:CGPointMake(220, 560)]];
                         [_spriteThirty runAction:[CCMoveTo actionWithDuration:6 position:CGPointMake(640, 170)]];
                         [_spriteFifty runAction:[CCMoveTo actionWithDuration:6 position:CGPointMake(250, 280)]];
@@ -265,7 +287,6 @@
                         [sp1 runAction:[CCMoveTo actionWithDuration:3 position:CGPointMake(arc4random()%1000, arc4random()%768)]];
                         [sp1 runAction:[CCFadeTo actionWithDuration:0.5 opacity:0]];
                     }
-                    
                     [share.jumpArray addObject:sp];
                     [[share.jumpArray objectAtIndex:0] setPosition:CGPointMake(-150,winsize.height/2+[sp textureRect].size.height/2+30)];
                     [[share.jumpArray objectAtIndex:0]runAction:[CCMoveTo actionWithDuration:4 position:CGPointMake(winsize.width/2-100, winsize.height/2+[sp textureRect].size.height/2+30)]];
@@ -316,10 +337,6 @@
 
 - (void)starButtonTapped
 {
-    // UINavigationController *navgationController;
-    //  [navgationController pushViewController:[CCDirector sharedDirector] animated:YES];
-    //  [[CCDirector sharedDirector]replaceScene:[CCTransitionSlideInL transitionWithDuration:1.2f scene:[initGameScene scene]]];//从左面
-    //  [[CCDirector sharedDirector]replaceScene:[CCTransitionSlideInB transitionWithDuration:1.2f scene:[initGameScene scene]]];  //从上面
     [[CCDirector sharedDirector]replaceScene:[CCTransitionPageTurn transitionWithDuration:1.2f scene:[initGameScene scene]]];  //翻页
 }
 

@@ -18,7 +18,7 @@
 
 +(id)gamePause:(id)_delegate
 {
-    return [[self alloc]initPause:_delegate];
+    return [[[self alloc]initPause:_delegate] autorelease];
 }
 
 -(id)initWithStart:(id)_delegate
