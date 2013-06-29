@@ -296,6 +296,8 @@ int i = 0,j = 0;
     [ballonarray release];
     [numArray release];
     [cutBallonArray release];
+    [blades release];
+    blades = nil;
     swoosh = nil;
     ballonarray = nil;
     numArray = nil;

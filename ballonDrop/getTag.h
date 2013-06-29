@@ -8,10 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
+#import "getTagDelegate.h"
 
-@interface getTag : CCNode {
+@interface getTag : CCNode{
 }
 
 +(int)getoperateTag;
+
+@property (nonatomic,retain) CCNode <getTagDelegate> *delegate;
 
 @end

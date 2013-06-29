@@ -14,7 +14,7 @@
 
 +(int)getTheSetTime
 {
-    int time = 15;
+    int time = 40;
     Shared *shared = [Shared shared];
     shared.theTotalTimeOnEachQuestion = time;
     return shared.theTotalTimeOnEachQuestion;

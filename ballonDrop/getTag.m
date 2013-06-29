@@ -11,6 +11,8 @@
 
 @implementation getTag
 
+@synthesize delegate;
+
 +(int)getoperateTag
 {
     Shared *share = [Shared shared];

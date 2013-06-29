@@ -133,7 +133,7 @@
         [walkFifty addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"beefifty%d.png",i]]];
         [walkHundred addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"beehundred%d.png",i]]];
         [walkReset addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"reset%d.png",i]]];
-        [walkOK addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"ok%d.png",i]]];
+        [walkOK addObject:[[CCSpriteFrameCache sharedSpriteFrameCache]spriteFrameByName:[NSString stringWithFormat:@"ok%d.png",i] ]];
     }
     
     //(4)创建动画对象
@@ -326,6 +326,7 @@
                     else if (sprite.tag == 8)
                     {
                         [self unscheduleUpdate];
+                        
                         [[CCDirector sharedDirector]replaceScene:[CCTransitionPageTurn transitionWithDuration:3.0f scene:[initGameScene scene]]];
                         break;
                     }
@@ -342,8 +343,10 @@
 
 - (void) dealloc
 {
+//    [allArray release];
+//    allArray = nil;
     CCLOG(@"%@,%@",NSStringFromSelector(_cmd),self);
-    [self removeFromParentAndCleanup:YES];
+//    [self removeFromParentAndCleanup:YES];
     [super dealloc];
 }
 

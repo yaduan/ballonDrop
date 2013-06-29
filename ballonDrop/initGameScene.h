@@ -17,7 +17,7 @@
 
 #define speed 110.0
 
-@interface initGameScene : CCLayer
+@interface initGameScene : CCLayer 
 {
     double nextTossTime;
     Shared  *sharedArray;
@@ -59,3 +59,4 @@
 + (void)endButtonTapped;
 
 @end
+

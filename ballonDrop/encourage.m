@@ -167,6 +167,10 @@
 
 -(void) dealloc
 {
+//    [oneActionArray release];
+//    [twoActionArray release];
+//    oneActionArray = nil;
+//    twoActionArray = nil;
 	[super dealloc];
 }
 

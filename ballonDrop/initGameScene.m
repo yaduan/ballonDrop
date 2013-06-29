@@ -232,10 +232,9 @@
     [weekArray addObject:@"星期五"];
     [weekArray addObject:@"星期六"];
     
-    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-                                                                                       //原来这里没有autorelease
+    NSCalendar *calendar = [[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] autorelease];
     NSDate *now;
-    NSDateComponents *comps = [[NSDateComponents alloc] init];
+    NSDateComponents *comps = [[[NSDateComponents alloc] init] autorelease];
     NSInteger unitFlags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSWeekdayCalendarUnit |
     NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit;
     now=[NSDate date];
@@ -246,7 +245,6 @@
     NSInteger week = [comps weekday]-1;        
     NSInteger hour = [comps hour];
     NSInteger min = [comps minute];
-//    [comps release];  这里不能进行释放，因为在切换场景的时候就已经全部释放
     if (hour == 12)
     {
         getDateString= [NSString  stringWithFormat:@"%4d年%d月%d日            %@            下午%d:",year,month,day,[weekArray objectAtIndex:week],hour];
@@ -279,15 +277,13 @@
     
     NSNumber *numTotal = [NSNumber numberWithInt:sharedArray.totalQuesNum];
     NSNumber *numRight = [NSNumber numberWithInt:sharedArray.doRightNum];
-    NSString *totalString = [NSString stringWithFormat:@"                         %@                               ", numTotal];
-    NSString *rightString = [NSString stringWithFormat:@"%@\n", numRight];
+    NSString *totalString = [[NSString stringWithFormat:@"                         %@                               ", numTotal] autorelease];
+    NSString *rightString = [[NSString stringWithFormat:@"%@\n", numRight] autorelease];
     
     totalTimeString = [totalTimeString stringByAppendingString:totalString];
     totalTimeString = [totalTimeString stringByAppendingString:rightString];
     [sharedArray.dateArray addObject:totalTimeString];
     self.dataStr = totalTimeString;
-    
-   [calendar release];
 }
 
 -(BOOL) saveGameData:(NSString *)data  saveFileName:(NSString *)fileName
@@ -505,9 +501,10 @@
 
 -(void)dealloc
 {
+    
     CCLOG(@"%@,%@",NSStringFromSelector(_cmd),self);
        
-    [self removeFromParentAndCleanup:YES];
+//    [self removeFromParentAndCleanup:YES];
 
     [super dealloc];
 }

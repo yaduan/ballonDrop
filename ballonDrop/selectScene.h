@@ -10,6 +10,7 @@
 #import "cocos2d.h"
 #import "Shared.h"
 #import "aboutGame.h"
+//#import "getTagDelegate.h"
 
 @interface selectScene : CCLayer
 {
@@ -55,9 +56,10 @@
     
     NSInteger  clickCount;
     NSInteger  count;
-    
-
 }
+
+
+//@property (nonatomic,retain) CCNode<getTagDelegate> *delegate;
 
 @property (nonatomic,retain) CCSprite *Icon;
 @property (nonatomic,retain) CCAction *walkAction;
